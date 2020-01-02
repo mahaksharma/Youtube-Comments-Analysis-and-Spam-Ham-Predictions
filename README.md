@@ -1,5 +1,8 @@
 # Youtube-Comments-Analysis-and-Spam-Ham-Predictions
 
+https://link.springer.com/chapter/10.1007/978-3-319-76348-4_23
+# "Content-Based Classification Approach for Video-Spam Identification." International Conference on Intelligent Systems Design and Applications. Springer, Cham, 2017.
+
 ABSTRACT
 As the popularity of content sharing websites such as YouTube and Flickr has increased, they have become targets for spam, phishing and the distribution of malware. On YouTube, the facility for users to post comments can be used by spam campaigns to direct unsuspecting users to bogus e-commerce websites. In this project, we demonstrate how spam campaigns uses the vast data of set of comments on youtube videos to predict whether the particular comment is a spam or ham comment. The usage and popularity of content sharing websites continues to rise each year. YouTube now receives more than three billion views per day, with forty-eight hours of video being uploaded every minute;  increases of 50% and 100% respectively over the previous year. Unfortunately, such increases have also resulted in these sites becoming  more lucrative targets for spammers hoping to attract unsuspecting users to malicious websites, where a variety of threats such as scams (phishing,e-commerce) and malware can be found. Spam detection method will prevent user to visit malicious website and pages.Youtube spam, which is referred to as unsolicited comments containing malicious link that directs victims to external sites containing malware downloads, phishing, drug sales, or scams, set of irrelevant comments which is completely different from the video content etc, not only interferes user experiences, but also damages the whole Internet.
 
