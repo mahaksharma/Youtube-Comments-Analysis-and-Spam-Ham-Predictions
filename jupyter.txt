@@ -1,0 +1,142 @@
+#!python3
+import csv
+import pandas as pd
+import numpy  as np
+import matplotlib.pyplot as plt
+import nltk, sys
+
+with open('tsvnew.csv',newline='') as f:
+    r = csv.reader(f)
+    data = [line for line in r]
+with open('tsvnew1.csv','w',newline='') as f:
+    w = csv.writer(f)
+    w.writerow(['Class','Text'])
+    w.writerows(data)
+    df = pd.read_csv('tsvnew1.csv', encoding='latin-1')
+# Count the number of words in each Text
+df['Count']=0
+for i in np.arange(2,len(df.Text)):
+    df.loc[i,'Count'] = len(df.loc[i,'Text'])
+
+# Unique values in target set
+print ("Unique values in the Class set: ", df.Class.unique())
+
+
+# Replace ham with 0 and spam with 1
+df = df.replace(['ham','spam'],[0, 1]) 
+
+# displaying the new table
+df.head()
+# collecting ham messages in one place 
+ham  = df[df.Class == 0]
+ham_count  = pd.DataFrame(pd.value_counts(ham['Count'],sort=True).sort_index())
+print ("Number of ham messages in data set:", ham['Class'].count())
+print ("Ham Count value", ham_count['Count'].count())
+# collecting spam messages in one place 
+spam = df[df.Class == 1]
+spam_count = pd.DataFrame(pd.value_counts(spam['Count'],sort=True).sort_index())
+print ("Number of spam messages in data set:", spam['Class'].count())
+print ("Spam Count value:", spam_count['Count'].count())
+ax = plt.axes()
+xline_ham = np.linspace(0, len(ham_count) - 1, len(ham_count))
+ax.bar(xline_ham, ham_count['Count'], width=2.2, color='r')
+ax.set_title('SMS Ham by length of message')
+plt.xlabel('length')
+plt.ylabel('frequency')
+plt.show()
+ax = plt.axes()
+xline_spam = np.linspace(0, len(spam_count) - 1, len(spam_count))
+ax.bar(xline_spam,spam_count['Count'], width=0.75, color='b')
+ax.set_title('SMS Spam by length of message')
+plt.xlabel('length')
+plt.ylabel('frequency')
+plt.show()
+# importing Natural Language Toolkit 
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+
+#if true it will download all the stopwords
+if False:
+    nltk.download('stopwords')
+
+#if true will create vectorizer without any stopwords
+if False:
+    vectorizer = TfidfVectorizer()
+
+#if true will create vectorizer with stopwords
+if True:
+    stopset = set(stopwords.words("english"))
+    vectorizer = TfidfVectorizer(stop_words=stopset,binary=True)
+
+# Extract feature column 'Text'
+X = vectorizer.fit_transform(df.Text)
+# Extract target column 'Class'
+y = df.Class
+
+#Shuffle and split the dataset into the number of training and testing points
+if True: 
+    from sklearn.cross_validation import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, train_size=0.80, random_state=42)
+
+# Show the results of the split
+print ("Training set has {} samples.".format(X_train.shape[0]))
+print ("Testing set has {} samples.".format(X_test.shape[0]))
+
+# Import the models from sklearn
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+
+objects = ('Multi-NB', 'DTs', 'AdaBoost', 'KNN', 'RF')
+
+# function to train classifier
+def train_classifier(clf, X_train, y_train):    
+    clf.fit(X_train, y_train)
+
+# function to predict features 
+def predict_labels(clf, features):
+    return (clf.predict(features))
+
+# Initialize the three models
+A = MultinomialNB(alpha=1.0,fit_prior=True)
+B = DecisionTreeClassifier(random_state=42)
+C = AdaBoostClassifier(n_estimators=100)
+D = KNeighborsClassifier(n_neighbors=3)
+E = RandomForestClassifier(n_estimators=10, max_depth=None, min_samples_split=2, random_state=0)
+
+# loop to call function for each model
+clf = [A,B,C,D,E]
+pred_val = [0,0,0,0,0]
+
+for a in range(0,5):
+    train_classifier(clf[a], X_train, y_train)
+    y_pred = predict_labels(clf[a],X_test)
+    pred_val[a] = f1_score(y_test, y_pred,  average='binary') 
+    print (pred_val[a])
+
+# ploating data for F1 Score
+y_pos = np.arange(len(objects))
+y_val = [ x for x in pred_val]
+plt.bar(y_pos,y_val, align='center', alpha=0.7)
+plt.xticks(y_pos, objects)
+plt.ylabel('Accuracy Score')
+plt.title('Accuracy of Models')
+plt.show()
+# ploating data for Accuracy Score
+# ploating data for Accuracy of Models between 1.00 - 0.90 for better visualization
+objects = ('','Untunded', 'Tuned','')
+y_pos = np.arange(4)
+y_val = [0,0.93470790378,0.937062937063,0 ]
+plt.bar(y_pos,y_val, align='center',width = 0.5, alpha=0.6)
+plt.xticks(y_pos, objects)
+plt.ylabel('Accuracy Score')
+plt.title('Accuracy of AdaBoost')
+plt.show()
+
+
+
